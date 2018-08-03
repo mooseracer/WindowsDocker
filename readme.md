@@ -21,7 +21,7 @@ The idea is that clients will:
 
 The container host's networking has 3 layers: the external network (host network), the bridge network, and the Docker Swarm overlay network. The Docker daemon manages the bridge and overlay networks for you. Further reading on how these work together: https://docs.docker.com/network/
 
-Persistent storage will be provided by a file share residing outside the cluster. You should design this to be highly available and ensure it gets backed up regularly. Architecting your storage is highly dependent on what your containers are doing, so please see the official guidelines: https://docs.docker.com/storage/
+Architecting your storage is highly dependent on what your containers are doing, so please see the official guidelines: https://docs.docker.com/storage/
 
 ### DNS
 DNS Round Robin is used to send requests to the Traefik instances on each host. Create new A records with the external IP of each host, all pointing to the same FQDN (i.e. apps.local). Create a wildcard (*) CNAME for this FQDN so that you can add arbitrary new web services without needing new DNS records (i.e. reports.apps.local, timeclock.apps.local, etc). In Active Directory DNS this will appear as a new stub zone in your domain.
