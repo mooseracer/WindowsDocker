@@ -1,0 +1,34 @@
+stages:
+  - test
+  - release
+  - deploy
+
+variables:
+  TEST_IMAGE: git.local:5005/iisapp:test
+  RELEASE_IMAGE: git.local:5005/iisapp:latest
+  SERVICE_NAME: iisapp
+
+before_script:
+  - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN git.local:5005
+
+test:
+  stage: test
+  script:
+    - docker pull $TEST_IMAGE
+    - $test = .\test.ps1 "$SERVICE_NAME`_test" $TEST_IMAGE
+    - Write-Host $test
+
+release:
+  stage: release
+  when: manual
+  allow_failure: false
+  script:
+    - docker pull $TEST_IMAGE
+    - docker tag $TEST_IMAGE $RELEASE_IMAGE
+    - docker push $RELEASE_IMAGE
+
+deploy:
+  stage: deploy
+  script:
+    - docker pull $RELEASE_IMAGE
+    - docker stack deploy --with-registry-auth -c docker-compose.yml $SERVICE_NAME

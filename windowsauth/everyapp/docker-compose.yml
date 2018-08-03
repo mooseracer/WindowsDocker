@@ -1,0 +1,35 @@
+version: "3.3"
+
+services:
+  everyapp:
+    image: everyapp
+    volumes:
+      - C:/logs/everyapp:C:/logs
+    networks:
+      - traefik-net
+    credential_spec:
+      file: DOCKER.json
+    deploy:
+      restart_policy:
+        condition: on-failure
+      replicas: 1
+      labels:
+        - "traefik.enable=true"
+        - "traefik.tags=web"
+        - "traefik.port=80"
+        - "traefik.docker.network=traefik-net"
+        - "traefik.backend=everyapp"
+        - "traefik.backend.healthcheck.healthcheck=/health"
+        - "traefik.backend.loadbalancer.method=wrr"
+        - "traefik.backend.loadbalancer.stickiness=true"
+        - "traefik.logLevel=INFO"
+        - "traefik.frontend.rule=Host:everyapp.apps.local"
+        - "traefik.frontend.entryPoints=http"
+        - "traefik.frontend.passHostHeader=true"       
+
+volumes:
+  logs:
+
+networks:
+  traefik-net:
+    external: true

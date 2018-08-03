@@ -1,0 +1,25 @@
+version: "3.3"
+
+services:
+  iisapp:
+    image: git.local:5005/iisapp:latest
+    networks:
+      - traefik-net
+    deploy:
+      restart_policy:
+        condition: on-failure
+      replicas: 1
+      labels:
+        - "traefik.tags=web"
+        - "traefik.docker.network=traefik-net"
+        - "traefik.backend.loadbalancer.method=wrr"
+        - "traefik.port=80"
+        - "traefik.enable=true"
+        - "traefik.logLevel=INFO"
+        - "traefik.backend=iisapp"
+        - "traefik.frontend.rule=Host:iisapp.apps.local"
+        - "traefik.frontend.entryPoints=http"      
+
+networks:
+  traefik-net:
+    external: true
